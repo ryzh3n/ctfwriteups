@@ -1,6 +1,8 @@
 # MetaTwo
 
-Date: 7th November 2022
+Date Released: 31st October 2022
+
+Date Completed: 7th November 2022
 
 ```console
 export IP=10.10.11.186
