@@ -27,14 +27,14 @@ sudo nmap -sS -T5 -n -p- $IP -vv -oN nmap/full
 80/tcp open  http    syn-ack ttl 63
 ```
 
-Whenever I access http://metatwo.htb, I got redirected to http://metapress.htb
+Whenever I access `http://metatwo.htb`, I got redirected to `http://metapress.htb`
 
-Added 'metapress.htb' to /etc/hosts
+Added `metapress.htb` to /etc/hosts
 
-In http://metapress.htb/:
+In `http://metapress.htb/`:
 	Wordpress Site
 
-wpscan on http://metapress.htb:
+wpscan on `http://metapress.htb`:
 ```console
 wpscan --url metapress.htb --enumerate p,u --plugins-detection aggressive --detection-mode aggressive -o wpscan/metapress.htb
 ```
