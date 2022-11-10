@@ -6,7 +6,7 @@ Date Completed: 7th November 2022
 
 This was actually my first time posting a CTF write-up. Since it was still an active machine at the moment so I thought of posting a write-up incase anyone needs it.
 
-I always start off by setting the environt variable `$IP` to the target's IP address. This was actually inspired by [John Hammond](https://www.youtube.com/c/JohnHammond010) as he always do that in his youtube videos.
+I always start off by setting the environment variable `$IP` to the target's IP address. This was actually inspired by [John Hammond](https://www.youtube.com/c/JohnHammond010) as he always do that in his youtube videos.
 
 ```console
 export IP=10.10.11.186
