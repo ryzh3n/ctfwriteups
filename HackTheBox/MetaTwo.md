@@ -194,7 +194,7 @@ ftp:x:107:65534::/srv/ftp:/usr/sbin/nologin
 ```
 LFI achieved! From here we can see there's a user called `jnelson`.
 
-Next step is to figure out what file should I read to achieve RCE.
+Next step is to figure out what file should I read to gain control.
 
 Normally in WordPress sites, `wp-config.php` is the file that contains credentials of other services that the web server connects to.
 
