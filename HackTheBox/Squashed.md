@@ -229,12 +229,17 @@ You'll definitely regret if you came here to find for the **root flag**. Try fin
 
 The credentials of `root` is actually shown in cleartext in `/home/ross/.local/share/tracker/data/tracker-store.journal`. You just need some patient to find it out.
 
-To be honest, I wasn't expecting to escalate to `root` immediately. I was thinking maybe I need to perform **horizontal escalation** to `ross`, and then somehow use his keyfile at `/usr/share/keepassxc/keyfiles/ross/keyfile.key` to unlock `/home/ross/Documents/Passwords.kdbx`, then I'll probably get the credentials of `root` at that step.
+![squashed-root-pw](../Images/squashed-root-pw.png)
 
-The credentials of `root` is:
+Alternatively, the password of `root` can also be found using:
+```console
+$ strings /home/ross/.local/share/tracker/data/tracker-store.journal | grep root
+
+[REDACTED]
+[Database] root:vFg4aHhJl.9  [System] root:cah$mei7rai9A
 ```
-root:cah$mei7rai9A
-```
+
+The password of `root` is `cah$mei7rai9A`.
 
 So I authenticated as `root` to get the **root flag**.
 ```console
@@ -259,6 +264,8 @@ The reason why I wasn't able to read the `html/` directory after mounting is bec
 The `/home/ross` NFS directory was not given the `rw` flag. Hence, it is not writable. You can learn more about NFS configurations [here](https://www.thegeekdiary.com/basic-nfs-security-nfs-no_root_squash-and-suid/).
 
 ### Others
+
+To be honest, I wasn't expecting to escalate to `root` immediately. I was thinking maybe I need to perform **horizontal escalation** to `ross`, and then somehow use his keyfile at `/usr/share/keepassxc/keyfiles/ross/keyfile.key` to unlock `/home/ross/Documents/Passwords.kdbx`, then I'll probably get the credentials of `root` at that step.
 
 The other ports open are just rabbit holes!!
 
