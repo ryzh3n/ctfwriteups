@@ -39,6 +39,7 @@ The last step is crucial, if you did not do this, you will not be able to authen
 
 Then I copied the private key (`id_rsa`) to my box and named it `id_rsa_alex`. The permission of the file needs to be set to `600` in order to use it.
 ```console
+$ chmod 600 id_rsa_alex
 $ ssh -i id_rsa_alex alex@$IP
 
 [REDACTED]
