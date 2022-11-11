@@ -51,9 +51,9 @@ Then I mount those shares to my box
 $ mkdir nfs
 $ mkdir nfs/ross
 $ mkdir nfs/html
-
-sudo mount -t nfs $IP:/home/ross nfs/ross
-sudo mount -t nfs $IP:/var/www/html nfs/html
+$ sudo mount -t nfs $IP:/home/ross nfs/ross
+$ sudo mount -t nfs $IP:/var/www/html nfs/html
+$ cd  nfs/
 ```
 
 Now in my `nfs/` directory:
