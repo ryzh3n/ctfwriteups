@@ -217,6 +217,8 @@ alex@squashed:~$
 
 The **user flag** is at `/home/alex/user.txt`.
 
+I chose to stabilize the shell by generating SSH keys for `alex`. You can learn how to do it [here](../Tips%26Tricks/Generating%20SSH%20Keys.md)
+
 You'll definitely regret if you came here to find for the **root flag**. Try finding it yourself before you continue to read.
 
 .
