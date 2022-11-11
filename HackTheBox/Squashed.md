@@ -229,7 +229,7 @@ You'll definitely regret if you came here to find for the **root flag**. Try fin
 
 The credentials of `root` is actually shown in cleartext in `/home/ross/.local/share/tracker/data/tracker-store.journal`. You just need some patient to find it out.
 
-To be honest, I wasn't to expecting to escalate to `root` immediately. I was thinking maybe I need to perform **horizontal escalation** to `ross`, and then somehow use his keyfile at `/usr/share/keepassxc/keyfiles/ross/keyfile.key` to unlock `/home/ross/Documents/Passwords.kdbx`, then I'll probably get the credentials of `root` at that step.
+To be honest, I wasn't expecting to escalate to `root` immediately. I was thinking maybe I need to perform **horizontal escalation** to `ross`, and then somehow use his keyfile at `/usr/share/keepassxc/keyfiles/ross/keyfile.key` to unlock `/home/ross/Documents/Passwords.kdbx`, then I'll probably get the credentials of `root` at that step.
 
 The credentials of `root` is:
 ```
