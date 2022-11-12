@@ -260,13 +260,13 @@ The **root flag** is at `/root/root.txt`.
 
 Here are some things that I've explored after obtaining a `root` shell.
 
-### Unable to read `html/` 
-The reason why I wasn't able to read the `html/` directory after mounting is because of the configuration set in `/etc/exports`:
+### Unable to write `nfs/ross/` 
+The reason why I wasn't able to read the `nfs/ross/` directory after mounting is because of the configuration set in `/etc/exports`:
 ```
 /var/www/html *(rw,sync,root_squash)
 /home/ross *(sync,root_squash)     <-- Here!
 ```
-The `/home/ross` NFS directory was not given the `rw` flag. Hence, it is not writable. You can learn more about NFS configurations [here](https://www.thegeekdiary.com/basic-nfs-security-nfs-no_root_squash-and-suid/).
+The NFS directory on the box `/home/ross` was not given the `rw` flag. Hence, it is not writable. You can learn more about NFS configurations [here](https://www.thegeekdiary.com/basic-nfs-security-nfs-no_root_squash-and-suid/).
 
 ### Others
 
