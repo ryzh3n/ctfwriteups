@@ -1,4 +1,4 @@
-# Postman - `OSCP Preparation`
+# Postman - `OSCP Style`
 
 Start: 13th November 2022 - 9:11 PM
 
