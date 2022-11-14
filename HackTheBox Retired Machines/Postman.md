@@ -6,7 +6,7 @@ End: 14th November 2022 - 3:28 AM
 
 Setup
 ```console
-export IP=10.10.10.160
+$ export IP=10.10.10.160
 ```
 Added `postman.htb` to `/etc/hosts`.
 
