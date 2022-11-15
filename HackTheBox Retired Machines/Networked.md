@@ -259,6 +259,8 @@ apache
 
 ### We are in as `apache@networked.htb`!
 
+I've tried to [generate SSH keys](../Tips%26Tricks/Generating%20SSH%20Keys.md) for the `apache` user. But I fail to authenticate using the private key.
+
 ## `apache` to `guly`
 
 The home directory of `guly` is readable.
@@ -378,6 +380,8 @@ bash: no job control in this shell
 
 Now we have the ***user flag***.
 
+At this point, I also [generated SSH keys](../Tips%26Tricks/Generating%20SSH%20Keys.md) for `guly`, and it worked! Now I have a more stabilized shell, and I can access the box as `guly` anytime incase I accidentally closed the reverse shell (and I need to wait 3 minutes to connect back).
+
 ## `guly` to `root`
 
 The first thing I do is to check for sudo privileges.
@@ -456,3 +460,41 @@ There we have it.
 The ***root flag*** is at `/root/root.txt`.
 
 ### Done!
+
+---
+
+### Others
+
+Since I got root, I wanted to know why I was not able to SSH as `apache`. 
+
+The reason why I wasn't able to authenticate SSH as `apache` is because the `PermitRootLogin` option is disabled in `/etc/ssh/sshd_config`. Only users with the uid >= 1000 is allowed to authenticate using SSH.
+
+In `/etc/ssh/sshd_config`, the `PermitRootLogin` options is being commented out with a `#`:
+```
+[REDACTED]
+
+#PermitRootLogin yes
+
+[REDACTED]
+```
+
+Now let's look into the authentication log files.
+
+For `apache` in `/var/log/secure`:
+```
+[REDACTED]
+
+Nov 14 09:51:14 networked.htb sshd[39152]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=10.10.14.10  user=apache
+Nov 14 09:51:14 networked.htb sshd[39152]: pam_succeed_if(sshd:auth): requirement "uid >= 1000" not met by user "apache"
+
+[REDACTED]
+```
+Whereas for `guly` in `/var/log/secure`:
+```
+[REDACTED]
+
+Nov 15 04:05:22 networked.htb sshd[113694]: Accepted publickey for guly from 10.10.14.10 port 51622 ssh2: RSA SHA256:UekbtXqBCXJDpU0FcVXca0S5lzHBpS4IMGQBbBstqMM
+Nov 15 04:05:22 networked.htb sshd[113694]: pam_unix(sshd:session): session opened for user guly by (uid=0)
+
+[REDACTED]
+```
