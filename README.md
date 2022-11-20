@@ -18,3 +18,4 @@ I only post write-ups on new challenges/boxes that I manage to solve them myself
   - [Nunchucks](HackTheBox%20Retired%20Machines/Nunchucks.md)
   - [Postman](HackTheBox%20Retired%20Machines/Postman.md) - `OSCP Style`
   - [Networked](HackTheBox%20Retired%20Machines/Networked.md) - `OSCP Style`
+  - [Safe](HackTheBox%20Retired%20Machines/Safe.md) - `OSCP Style`
