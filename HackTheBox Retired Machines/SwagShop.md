@@ -1,4 +1,4 @@
-# SwagShop
+# SwagShop - `OSCP Style`
 
 Start: 30th November 2022 1:00pm
 
