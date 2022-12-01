@@ -21,3 +21,4 @@ I only post write-ups on new challenges/boxes that I manage to solve them myself
   - [Networked](HackTheBox%20Retired%20Machines/Networked.md) - `OSCP Style`
   - [Safe](HackTheBox%20Retired%20Machines/Safe.md) - `OSCP Style`
   - [SwagShop](HackTheBox%20Retired%20Machines/SwagShop.md) - `OSCP Style`
+  - [FriendZone](HackTheBox%20Retired%20Machines/FriendZone.md) - `OSCP Style`
