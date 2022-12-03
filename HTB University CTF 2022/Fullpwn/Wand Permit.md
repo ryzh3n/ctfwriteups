@@ -199,5 +199,6 @@ At this point, these are my thoughts:
 ```
 MPFPEDWE4$96JF6UF4B$DXEDWE41G49$CVKETPEB$DD3DSPC7ECJUDUPC%ZD3Q5R.C4LE1WE..DF$DWE4EF4VKEP$D:KEIE4$F4HEC1WE..DF$DWE4/E4$/EHECIE4QF45VCZKEZQEWE4CF4V9EZEDU1D82B VD.OE9F63Q5OPCRWEWE4GF46$CSUENT93/DTVDHWEO-D3Q5GVCCICWF70A6QF65W55W5+K6Z2
 ```
-I have no idea what it means. But we are required to upload a photo of `Wizard ID` to verify our account. I uploaded the example photo given and it says im verified, idk how it checks for the photo but the JWT changed abit after verification.
+  I have no idea what it means. But we are required to upload a photo of `Wizard ID` to verify our account. I uploaded the example photo given and it says im verified, idk how it checks for the photo but the JWT changed abit after verification.
+
 4. In `scheduling a meeting`, I've tried injecting `XSS`, `SSTI` in the `city` parameter, but it is not working.
